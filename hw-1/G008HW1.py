@@ -145,7 +145,7 @@ if __name__ == "__main__":
 
     start_time_algorithm_2 = time.time()
     algorithm_2_estimate = MR_ApproxTCwithSparkPartitions(edges, C)
-    algorithm_2_execution_time = time.time() - start_time_algorithm_2
+    algorithm_2_execution_time = int((time.time() - start_time_algorithm_2) * 1000)
 
     print(f"Approximation through Spark partitions")
     print(f"- Number of triangles = {algorithm_2_estimate}")
