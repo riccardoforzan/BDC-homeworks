@@ -36,25 +36,29 @@ def count_triangles(edges):
 
 
 def edge_parser(val: str):
-    values = val.split(',')
+    values = val.split(",")
     return (int(values[0]), int(values[1]))
 
 
 def map_a1r1(a, b, u, p, c):
     v1 = u[0]
-    h1 = ((a*v1+b) % p) % c
+    h1 = ((a * v1 + b) % p) % c
 
     v2 = u[1]
-    h2 = ((a*v2+b) % p) % c
+    h2 = ((a * v2 + b) % p) % c
 
     if h1 == h2:
         return (h1, (v1, v2))
+    else:
+        return None
 
 
 def MR_ApproxTCwithNodeColors(edges, C: int):
     p = 8191
-    a = random.randint(1, p-1)
-    b = random.randint(0, p-1)
+    a = random.randint(1, p - 1)
+    b = random.randint(0, p - 1)
+
+    # get_rdd_info(edges)
 
     # R1 M
     map = edges.map(lambda x: map_a1r1(a, b, x, p, C))
@@ -69,31 +73,41 @@ def MR_ApproxTCwithNodeColors(edges, C: int):
     estimate_sum = estimates.reduceByKey(lambda x, y: x + y)
     sum = estimate_sum.take(1)[0][1]
 
-    return C*C*sum
+    return C * C * sum
 
 
 def map_a2_r1(edges):
-    count = yield count_triangles(edges)
-    return count
+    return [count_triangles(edges)]
 
 
 def MR_ApproxTCwithSparkPartitions(edges, C: int):
 
-	# R1
+    # R1
     estimates = edges.mapPartitions(map_a2_r1).cache()
 
-	# R2
-    sum = estimates.reduce(lambda x, y : x + y)
+    # R2
+    sum = estimates.reduce(lambda x, y: x + y)
 
-    return C*C*sum
+    return C * C * sum
+
+
+def get_rdd_info(rdd):
+    # Get number of elements in each partition
+    print("--- DEBUG ---")
+    print("num partitions: " + str(rdd.getNumPartitions()))
+    partition_sizes = rdd.mapPartitions(lambda iter: [(len(list(iter)))])
+    for size in partition_sizes.collect():
+        print("partition size: " + str(size))
+    print("--- DEBUG ---")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('C', type=int, help='C value used for estimation')
-    parser.add_argument('R', type=int, help='')
+    parser.add_argument("C", type=int, help="C value used for estimation")
+    parser.add_argument("R", type=int, help="")
     parser.add_argument(
-        'file', type=str, help='Path to the input file storing the graph')
+        "file", type=str, help="Path to the input file storing the graph"
+    )
     args = parser.parse_args()
 
     C = args.C
@@ -101,7 +115,7 @@ if __name__ == "__main__":
     file = args.file
 
     # SPARK SETUP
-    conf = SparkConf().setAppName('G008HW1')
+    conf = SparkConf().setAppName("G008HW1")
     sc = SparkContext(conf=conf)
 
     # Check that the given input file is actually a file
@@ -112,7 +126,8 @@ if __name__ == "__main__":
 
     # Create edges from string RDD
     edges = raw_data.map(edge_parser).repartition(C).cache()
-    # print(edges.take(10))
+    # print(edges.take(edges.count()))
+    # get_rdd_info(edges)
 
     edge_count = edges.count()
 
@@ -132,14 +147,11 @@ if __name__ == "__main__":
         algorithm_1_execution_times.append((time.time() - start_time) * 1000)
 
     median_algorithm_1 = int(statistics.median(algorithm_1_estimates))
-    execution_time_algorithm_1 = int(
-        statistics.mean(algorithm_1_execution_times))
+    execution_time_algorithm_1 = int(statistics.mean(algorithm_1_execution_times))
 
     print(f"Approximation through node coloring")
-    print(
-        f"- Number of triangles (median over {R} runs) = {median_algorithm_1}")
-    print(
-        f"- Running time (average over {R} runs) = {execution_time_algorithm_1} ms")
+    print(f"- Number of triangles (median over {R} runs) = {median_algorithm_1}")
+    print(f"- Running time (average over {R} runs) = {execution_time_algorithm_1} ms")
 
     # ALGORITHM 2
 
