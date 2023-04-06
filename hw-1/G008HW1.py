@@ -104,7 +104,7 @@ def get_rdd_info(rdd):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("C", type=int, help="C value used for estimation")
-    parser.add_argument("R", type=int, help="")
+    parser.add_argument("R", type=int, help="Number of repetitions used for estimation")
     parser.add_argument(
         "file", type=str, help="Path to the input file storing the graph"
     )
