@@ -85,8 +85,6 @@ def MR_ApproxTCwithNodeColors(edges, C: int):
     a = random.randint(1, p - 1)
     b = random.randint(0, p - 1)
 
-    # get_rdd_info(edges)
-
     # MAP PHASE (R1)
     map = edges.map(lambda x: map_a1r1(a, b, x, p, C))
     filtered = map.filter(lambda x: x is not None)
