@@ -142,13 +142,13 @@ def MR_ApproxTCwithNodeColors(edges, C: int):
     return C * C * sum
 
 
-def map_a2r1(a, b, edge, p, C):
-    c1 = hash(a, b, edge[0], p, C)
-    c2 = hash(a, b, edge[1], p, C)
+def map_a2r1(a, b, edge, p, c):
+    c1 = hash(a, b, edge[0], p, c)
+    c2 = hash(a, b, edge[1], p, c)
 
     l = list()
 
-    for i in range(0, C):
+    for i in range(0, c):
         l.append((tuple(sorted((c1, c2, i))), edge))
 
     return l
@@ -211,7 +211,6 @@ if __name__ == "__main__":
         algorithm_1_estimates = list()
         algorithm_1_execution_times = list()
 
-        # run MR_ApproxTCwithNodeColors R times and compute median estimate and mean run time
         for index in range(0, R):
             start_time = time.time()
             algorithm_1_estimates.append(MR_ApproxTCwithNodeColors(edges, C))
@@ -220,7 +219,6 @@ if __name__ == "__main__":
         median_algorithm_1 = int(statistics.median(algorithm_1_estimates))
         execution_time_algorithm_1 = int(statistics.mean(algorithm_1_execution_times))
 
-        # print results of ALGORITHM 1
         print(f"Approximation through node coloring")
         print(f"- Number of triangles (median over {R} runs) = {median_algorithm_1}")
         print(
@@ -231,7 +229,6 @@ if __name__ == "__main__":
         algorithm_2_exact = None
         algorithm_2_execution_times = list()
 
-        # run MR_ApproxTCwithNodeColors R times and compute median estimate and mean run time
         for index in range(0, R):
             start_time = time.time()
             algorithm_2_exact = MR_ExactTC(edges, C)
@@ -239,7 +236,6 @@ if __name__ == "__main__":
 
         execution_time_algorithm_2 = int(statistics.mean(algorithm_2_execution_times))
 
-        # print results of ALGORITHM 1
         print(f"Exact algorithm with node coloring")
         print(f"- Number of triangles = {algorithm_2_exact}")
         print(
