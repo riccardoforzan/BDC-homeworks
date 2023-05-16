@@ -193,6 +193,7 @@ if __name__ == "__main__":
 
     # SPARK SETUP
     conf = SparkConf().setAppName("G008HW1")
+    conf.set("spark.locality.wait", "0s")
     sc = SparkContext(conf=conf)
 
     # create RDD of string from given file
