@@ -192,7 +192,7 @@ if __name__ == "__main__":
     file = args.file
 
     # SPARK SETUP
-    conf = SparkConf().setAppName("G008HW1")
+    conf = SparkConf().setAppName("G008HW2")
     conf.set("spark.locality.wait", "0s")
     sc = SparkContext(conf=conf)
 
@@ -203,10 +203,10 @@ if __name__ == "__main__":
     edges = raw_data.map(edge_parser).repartition(32).cache()
     edge_count = edges.count()
 
-    print(f"\nDataset =  {file}")
-    print(f"Number of Edges = {edge_count}")
-    print(f"Number of Colors = {C}")
-    print(f"Number of Repetitions = {R}")
+    print("\nDataset =  {}".format(file))
+    print("Number of Edges = {}".format(edge_count))
+    print("Number of Colors = {}".format(C))
+    print("Number of Repetitions = {}".format(R))
 
     if F == 0:
         algorithm_1_estimates = list()
@@ -220,10 +220,16 @@ if __name__ == "__main__":
         median_algorithm_1 = int(statistics.median(algorithm_1_estimates))
         execution_time_algorithm_1 = int(statistics.mean(algorithm_1_execution_times))
 
-        print(f"Approximation through node coloring")
-        print(f"- Number of triangles (median over {R} runs) = {median_algorithm_1}")
+        print("Approximation through node coloring")
         print(
-            f"- Running time (average over {R} runs) = {execution_time_algorithm_1} ms"
+            "- Number of triangles (median over {} runs) = {}".format(
+                R, median_algorithm_1
+            )
+        )
+        print(
+            "- Running time (average over {} runs) = {} ms".format(
+                R, execution_time_algorithm_1
+            )
         )
 
     if F == 1:
@@ -237,8 +243,10 @@ if __name__ == "__main__":
 
         execution_time_algorithm_2 = int(statistics.mean(algorithm_2_execution_times))
 
-        print(f"Exact algorithm with node coloring")
-        print(f"- Number of triangles = {algorithm_2_exact}")
+        print("Exact algorithm with node coloring")
+        print("- Number of triangles = {}".format(algorithm_2_exact))
         print(
-            f"- Running time (average over {R} runs) = {execution_time_algorithm_2} ms"
+            "- Running time (average over {} runs) = {} ms".format(
+                R, execution_time_algorithm_2
+            )
         )
