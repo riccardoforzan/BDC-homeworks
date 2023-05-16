@@ -1,0 +1,27 @@
+
+spark-submit --conf spark.pyspark.python=python3 --num-executors 2 G008HW2.py 8 3 1 /data/BDC2223/orkut4M.txt > 2_exec_orukt4M_exact.txt
+more 2_exec_orukt4M_exact.txt
+spark-submit --conf spark.pyspark.python=python3 --num-executors 2 G008HW2.py 16 3 0 /data/BDC2223/orkut4M.txt > 2_exec_orukt4M_approximate.txt
+more 2_exec_orukt4M_approximate.txt
+spark-submit --conf spark.pyspark.python=python3 --num-executors 4 G008HW2.py 8 3 1 /data/BDC2223/orkut4M.txt > 4_exec_orukt4M_exact.txt
+more 4_exec_orukt4M_exact.txt
+spark-submit --conf spark.pyspark.python=python3 --num-executors 4 G008HW2.py 16 3 0 /data/BDC2223/orkut4M.txt > 4_exec_orukt4M_approximate.txt
+more 4_exec_orukt4M_approximate.txt
+spark-submit --conf spark.pyspark.python=python3 --num-executors 8 G008HW2.py 8 3 1 /data/BDC2223/orkut4M.txt > 8_exec_orukt4M_exact.txt
+more 8_exec_orukt4M_exact.txt
+spark-submit --conf spark.pyspark.python=python3 --num-executors 8 G008HW2.py 16 3 0 /data/BDC2223/orkut4M.txt > 8_exec_orukt4M_approximate.txt
+more 8_exec_orukt4M_approximate.txt
+spark-submit --conf spark.pyspark.python=python3 --num-executors 16 G008HW2.py 8 3 1 /data/BDC2223/orkut4M.txt > 16_exec_orukt4M_exact.txt
+more 16_exec_orukt4M_exact.txt 
+spark-submit --conf spark.pyspark.python=python3 --num-executors 16 G008HW2.py 16 3 0 /data/BDC2223/orkut4M.txt > 16_exec_orukt4M_approximate.txt
+more 16_exec_orukt4M_approximate.txt
+spark-submit --conf spark.pyspark.python=python3 --num-executors 8 G008HW2.py 8 3 0 /data/BDC2223/orkut1M.txt > phase2_8_exec_orukt1M_approximate.txt
+more phase2_8_exec_orukt1M_approximate.txt
+spark-submit --conf spark.pyspark.python=python3 --num-executors 8 G008HW2.py 8 3 0 /data/BDC2223/orkut4M.txt > phase2_8_exec_orukt4M_approximate.txt
+more phase2_8_exec_orukt4M_approximate.txt
+spark-submit --conf spark.pyspark.python=python3 --num-executors 8 G008HW2.py 8 3 0 /data/BDC2223/orkut16M.txt > phase2_8_exec_orukt16M_approximate.txt
+more phase2_8_exec_orukt16M_approximate.txt
+spark-submit --conf spark.pyspark.python=python3 --num-executors 8 G008HW2.py 8 3 0 /data/BDC2223/orkut64M.txt > phase2_8_exec_orukt64M_approximate.txt
+more phase2_8_exec_orukt64M_approximate.txt 
+spark-submit --conf spark.pyspark.python=python3 --num-executors 8 G008HW2.py 8 3 0 /data/BDC2223/orkut117M.txt > phase2_8_exec_orukt117M_approximate.txt
+more phase2_8_exec_orukt117M_approximate.txt 
