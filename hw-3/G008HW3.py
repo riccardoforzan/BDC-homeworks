@@ -190,10 +190,9 @@ if __name__ == "__main__":
         if freq >= k_th:
             top_k_th_elements.append(key)
 
-    # FREQUENCY ESTIMATION THROUGH COUNT SKETCH
-
+    # FREQUENCY ERROR ESTIMATION
     relative_errors = list()
-
+    top_k_elements = list()
     for u in top_k_th_elements:
         estimate_freq_list = list()
 
@@ -209,7 +208,27 @@ if __name__ == "__main__":
         estimate = statistics.median(estimate_freq_list)
         true_freq = exact_count[u]
 
+        top_k_th_elements.append((true_freq, estimate))
+
         relative_err = abs(estimate - true_freq) / true_freq
         relative_errors.append(relative_err)
 
-    print(statistics.mean(relative_errors))
+    avg_relative_err = statistics.mean(relative_errors)
+
+    distinct_items = len(exact_count.keys())
+
+    print(f"D = {args.D}")
+    print(f"W = {args.W}")
+    print(f"Left = {args.left}")
+    print(f"Right = {args.right}")
+    print(f"K = {args.K}")
+
+    print(f"Streaming Σ length = {stream_length}")
+    print(f"Streaming ΣR length = {sub_stream_length}")
+    print(f"Number of distinct items = {distinct_items}")
+
+    print(f"Average relative error for items in ΣR with top-K highest frequencies = {avg_relative_err}")
+
+    if args.K < 20:
+        for true_freq, freq in top_k_elements:
+            print(f"True frequency: {true_freq} | Estimated frequency {freq}")
