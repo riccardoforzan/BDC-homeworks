@@ -203,7 +203,7 @@ if __name__ == "__main__":
     edges = raw_data.map(edge_parser).repartition(32).cache()
     edge_count = edges.count()
 
-    print("\nDataset =  {}".format(file))
+    print("Dataset = {}".format(file))
     print("Number of Edges = {}".format(edge_count))
     print("Number of Colors = {}".format(C))
     print("Number of Repetitions = {}".format(R))
