@@ -8,9 +8,7 @@ from collections import defaultdict
 import statistics
 
 # After how many items should we stop?
-# THRESHOLD = 10000000
-
-THRESHOLD = 1000000
+THRESHOLD = 10000000
 
 
 def hash(a: int, b: int, item: int, p: int, c: int):
@@ -18,15 +16,21 @@ def hash(a: int, b: int, item: int, p: int, c: int):
 
 
 # Operations to perform after receiving an RDD 'batch' at time 'time'
-def process_batch(time, batch, left: int, right: int, D: int, W: int):
+def process_batch(batch, left: int, right: int, D: int, W: int):
     C = W
 
-    # We are working on the batch at time `time`
+    # We are working on the batch at time
     global stream_length, sub_stream_length, sketch_table, exact_count, hash_function_values, sign_function_values
     batch_size = batch.count()
+
+    # If we already have enough points (> THRESHOLD), skip this batch.
+    if stream_length[0] >= THRESHOLD:
+        return
+
     stream_length[0] += batch_size
 
-    batch_items = batch.filter(lambda e: left <= int(e) and int(e) <= right).collect()
+    batch_items = batch.filter(
+        lambda e: left <= int(e) and int(e) <= right).collect()
     sub_stream_length[0] += len(batch_items)
 
     for element in batch_items:
@@ -54,8 +58,10 @@ def process_batch(time, batch, left: int, right: int, D: int, W: int):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("D", type=int, help="Number of rows of the count sketch")
-    parser.add_argument("W", type=int, help="Number of columns of the count sketch")
+    parser.add_argument(
+        "D", type=int, help="Number of rows of the count sketch")
+    parser.add_argument(
+        "W", type=int, help="Number of columns of the count sketch")
     parser.add_argument(
         "left", type=int, help="Left endpoint of the interval of interest"
     )
@@ -65,7 +71,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "K", type=int, help="Number of top of frequent items of interest"
     )
-    parser.add_argument("port_exp", type=int, help="Port number of the remote server")
+    parser.add_argument("port_exp", type=int,
+                        help="Port number of the remote server")
     args = parser.parse_args()
 
     # IMPORTANT: when running locally, it is *fundamental* that the
@@ -136,8 +143,8 @@ if __name__ == "__main__":
     # BEWARE: the `foreachRDD` method has "at least once semantics", meaning
     # that the same data might be processed multiple times in case of failure.
     stream.foreachRDD(
-        lambda time, batch: process_batch(
-            time, batch, args.left, args.right, args.D, args.W
+        lambda batch: process_batch(
+            batch, args.left, args.right, args.D, args.W
         )
     )
 
@@ -156,20 +163,11 @@ if __name__ == "__main__":
     ssc.stop(False, True)
     print("Streaming engine stopped")
 
-    # COMPUTE AND PRINT FINAL STATISTICS
-    print("Number of items processed =", stream_length[0])
-
-    # EXACT FREQUENCIES
-    for key, value in exact_count.items():
-        # print(f"{key} : {value}")
-        continue
-
     # TRUE SECOND MOMENT
     true_second_moment = 0
     for value in exact_count.values():
         true_second_moment += value**2
     true_second_moment /= sub_stream_length[0] ** 2
-    print(f"True second moment = {true_second_moment}")
 
     # APPROXIMATE SECOND MOMENT
     approximate_second_moments = list()
@@ -180,7 +178,6 @@ if __name__ == "__main__":
 
     approximate_second_moment = statistics.median(approximate_second_moments)
     approximate_second_moment /= sub_stream_length[0] ** 2
-    print(f"Approximate second moment = {approximate_second_moment}")
 
     # TOP K FREQUENCIES
     k_th = sorted([e for e in exact_count.values()], reverse=True)[args.K]
@@ -208,7 +205,7 @@ if __name__ == "__main__":
         estimate = statistics.median(estimate_freq_list)
         true_freq = exact_count[u]
 
-        top_k_th_elements.append((true_freq, estimate))
+        top_k_elements.append((u, true_freq, estimate))
 
         relative_err = abs(estimate - true_freq) / true_freq
         relative_errors.append(relative_err)
@@ -217,18 +214,18 @@ if __name__ == "__main__":
 
     distinct_items = len(exact_count.keys())
 
-    print(f"D = {args.D}")
-    print(f"W = {args.W}")
-    print(f"Left = {args.left}")
-    print(f"Right = {args.right}")
-    print(f"K = {args.K}")
+    print(
+        f"D = {args.D} W = {args.W} [left,right] = [{args.left}, {args.right}] K = {args.K} port={args.port_exp}")
+    
+    print(f"Total number of items = {stream_length[0]}")
+    print(f"Total number of items in [{args.left}, {args.right}] = {sub_stream_length}")
+    print(f"Number of distinct items in [{args.left}, {args.right}] = {distinct_items}")
 
-    print(f"Streaming Σ length = {stream_length}")
-    print(f"Streaming ΣR length = {sub_stream_length}")
-    print(f"Number of distinct items = {distinct_items}")
+    if args.K < 20:
+        for item, true_freq, freq in top_k_elements:
+            print(f"Item {item} Freq = {true_freq} Est. Freq = {freq}")
 
     print(f"Average relative error for items in ΣR with top-K highest frequencies = {avg_relative_err}")
 
-    if args.K < 20:
-        for true_freq, freq in top_k_elements:
-            print(f"True frequency: {true_freq} | Estimated frequency {freq}")
+    print(f"F2 {true_second_moment} F2 Estimate {approximate_second_moment}")
+
