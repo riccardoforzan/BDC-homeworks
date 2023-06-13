@@ -225,7 +225,7 @@ if __name__ == "__main__":
         for item, true_freq, freq in top_k_elements:
             print(f"Item {item} Freq = {true_freq} Est. Freq = {freq}")
 
-    print(f"Average relative error for items in ΣR with top-K highest frequencies = {avg_relative_err}")
+    print(f"Avg err for top {args.K} = {avg_relative_err}")
 
     print(f"F2 {true_second_moment} F2 Estimate {approximate_second_moment}")
 
