@@ -102,12 +102,6 @@ if __name__ == "__main__":
     # to deadlocks.
     stopping_condition = threading.Event()
 
-    # &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-    # INPUT READING
-    # &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
-
-    print("Receiving data from port =", args.port_exp)
-
     # &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
     # DEFINING THE REQUIRED DATA STRUCTURES TO MAINTAIN THE STATE OF THE STREAM
     # &&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&
@@ -147,19 +141,19 @@ if __name__ == "__main__":
     )
 
     # MANAGING STREAMING SPARK CONTEXT
-    print("Starting streaming engine")
+    # print("Starting streaming engine")
     ssc.start()
 
-    print("Waiting for shutdown condition")
+    # print("Waiting for shutdown condition")
     stopping_condition.wait()
-    print("Stopping the streaming engine")
+    # print("Stopping the streaming engine")
 
     # NOTE: You will see some data being processed even after the
     # shutdown command has been issued: This is because we are asking
     # to stop "gracefully", meaning that any outstanding work
     # will be done.
     ssc.stop(False, True)
-    print("Streaming engine stopped")
+    # print("Streaming engine stopped")
 
     # TRUE SECOND MOMENT
     true_second_moment = 0
