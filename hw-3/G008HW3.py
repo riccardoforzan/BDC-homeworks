@@ -15,10 +15,8 @@ def hash(a: int, b: int, item: int, p: int, c: int):
     return ((a * item + b) % p) % c
 
 
-# Operations to perform after receiving an RDD 'batch' at time 'time'
+# Operations to perform after receiving an RDD 'batch' at time
 def process_batch(batch, left: int, right: int, D: int, W: int):
-    C = W
-
     # We are working on the batch at time
     global stream_length, sub_stream_length, sketch_table, exact_count, hash_function_values, sign_function_values
     batch_size = batch.count()
@@ -45,7 +43,7 @@ def process_batch(batch, left: int, right: int, D: int, W: int):
         # sketch table update
         for row in range(D):
             p, a, b = hash_function_values[row]
-            col = hash(a, b, item, p, C)
+            col = hash(a, b, item, p, W)
 
             p, a, b = sign_function_values[row]
             sign = -1 if hash(a, b, item, p, 2) == 0 else 1
@@ -216,10 +214,12 @@ if __name__ == "__main__":
 
     print(
         f"D = {args.D} W = {args.W} [left,right] = [{args.left}, {args.right}] K = {args.K} port={args.port_exp}")
-    
+
     print(f"Total number of items = {stream_length[0]}")
-    print(f"Total number of items in [{args.left}, {args.right}] = {sub_stream_length}")
-    print(f"Number of distinct items in [{args.left}, {args.right}] = {distinct_items}")
+    print(
+        f"Total number of items in [{args.left}, {args.right}] = {sub_stream_length[0]}")
+    print(
+        f"Number of distinct items in [{args.left}, {args.right}] = {distinct_items}")
 
     if args.K < 20:
         for item, true_freq, freq in top_k_elements:
@@ -228,4 +228,3 @@ if __name__ == "__main__":
     print(f"Avg err for top {args.K} = {avg_relative_err}")
 
     print(f"F2 {true_second_moment} F2 Estimate {approximate_second_moment}")
-
