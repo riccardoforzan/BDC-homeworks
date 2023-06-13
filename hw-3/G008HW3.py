@@ -115,7 +115,7 @@ if __name__ == "__main__":
     stream_length = [0]  # Stream length (an array to be passed by reference)
 
     sub_stream_length = [0]  # length of ΣR filtered stream
-    sketch_table = [[0] * args.W] * args.D
+    sketch_table = [[0 for col in range(args.W)] for row in range(args.D)]
     exact_count = defaultdict(int)
 
     hash_function_values = list()
@@ -178,7 +178,7 @@ if __name__ == "__main__":
     approximate_second_moment /= sub_stream_length[0] ** 2
 
     # TOP K FREQUENCIES
-    k_th = sorted([e for e in exact_count.values()], reverse=True)[args.K]
+    k_th = sorted([e for e in exact_count.values()], reverse=True)[args.K - 1]
 
     top_k_th_elements = list()
     for key, freq in exact_count.items():
@@ -221,8 +221,8 @@ if __name__ == "__main__":
     print(
         f"Number of distinct items in [{args.left}, {args.right}] = {distinct_items}")
 
-    if args.K < 20:
-        for item, true_freq, freq in top_k_elements:
+    if args.K <= 20:
+        for item, true_freq, freq in sorted(top_k_elements, key=lambda t: t[1], reverse=True):
             print(f"Item {item} Freq = {true_freq} Est. Freq = {freq}")
 
     print(f"Avg err for top {args.K} = {avg_relative_err}")
